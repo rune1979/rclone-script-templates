@@ -10,8 +10,8 @@ move_old_files_to="dated_directory" #move_old_files_to is one of:
 options="$1"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
                        #do not put these in options: --backup-dir, --suffix, --log-file
 job_name="Nextcloud_user_data"          #job_name="$(basename $0)"
-email="runehattmann@gmail.com"
-full_backup_date="1" #specify what day of month to make a full compressed backup of snapshot
+email="yourmail@gmail.com"
+retention="30" # How many days do you want to retain old files for
 ################################ set variables ###############################
 # $new is the directory name of the current snapshot
 # $timestamp is time that old file was moved out of new (not time that file was copied from source)
