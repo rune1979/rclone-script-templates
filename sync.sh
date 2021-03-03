@@ -121,7 +121,7 @@ exit_code=$?
 conf_logging "$exit_code"
 
 ################################### clean up old ##################################
-cmd_delete="rclone delete --rmdirs $dest/$bckp/* --min-age ${del_after}M $log_option" # you might want to dry-run this too.
+cmd_delete="rclone delete --rmdirs $dest/* --min-age ${retention}d $log_option $options" # you might want to dry-run this too.
 
 echo "Removing old synced files $timestamp $job_name"
 echo "$cmd_purge"
