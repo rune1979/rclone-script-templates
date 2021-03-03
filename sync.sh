@@ -1,23 +1,24 @@
 #!/usr/bin/env sh
+#This script is based on the rclone_jobber.sh at https://github.com/wolfv6/rclone_jobber
 
 ################################# parameters #################################
-source="/home/pi/test_rclone_data"            #the directory to back up (without a trailing slash)
-dest="/home/pi/test_data_backup"              #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
-move_old_files_to="dated_directory" #move_old_files_to is one of:
-                       # "dated_directory" - move old files to a dated directory (an incremental backup)
-                       # "dated_files"     - move old files to old_files directory, and append move date to file names (an incremental backup)
-                       # ""                - old files are overwritten or deleted (a plain one-way sync backup)
-options="$1"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
+source="$1"    #the directory to back up (without a trailing slash)
+dest="$2"      #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
+
+job_name="$3"          #job_name="$(basename $0)"
+
+retention="$4" # How many days do you want to retain old files for
+
+options="$5"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
                        #do not put these in options: --backup-dir, --suffix, --log-file
-job_name="Nextcloud_user_data"          #job_name="$(basename $0)"
-email="yourmail@gmail.com"
-retention="30" # How many days do you want to retain old files for
-################################ set variables ###############################
+
+################################ other variables ###############################
+email="your_email@some_mail.com" # the admin email
 # $new is the directory name of the current snapshot
 # $timestamp is time that old file was moved out of new (not time that file was copied from source)
 new="last_snapshot"
-timestamp="$(date +%F_%T)"
-#timestamp="$(date +%F_%H%M%S)"  #time w/o colons if thumb drive is FAT format, which does not allow colons in file name
+#timestamp="$(date +%F_%T)"
+timestamp="$(date +%F_%H%M%S)"  #time w/o colons if thumb drive is FAT format, which does not allow colons in file name
 
 # set log_file path
 #path="$(realpath "$0")"                 #this will place log in the same directory as this script
@@ -62,6 +63,20 @@ print_message()
     send_mail "$msg"
 }
 
+# confirmation and logging
+conf_logging() {
+    exit_code="$1"
+    if [ "$exit_code" -eq 0 ]; then            #if no errors
+        confirmation="$(date +%F_%T) completed $job_name"
+        echo "$confirmation"
+        send_to_log "$confirmation"
+        send_to_log ""
+    else
+        print_message "ERROR" "failed.  rclone exit_code=$exit_code"
+        send_to_log ""
+        exit 1
+    fi
+}
 ################################# range checks ################################
 # if source is empty string
 if [ -z "$source" ]; then
@@ -89,19 +104,7 @@ if pidof -o $PPID -x "$job_name"; then
 fi
 
 ############################### move_old_files_to #############################
-# deleted or changed files are removed or moved, depending on value of move_old_files_to variable
-# default move_old_files_to="" will remove deleted or changed files from backup
-if [ "$move_old_files_to" = "dated_directory" ]; then
-    # move deleted or changed files to archive/$(date +%Y)/$timestamp directory
-    backup_dir="--backup-dir=$dest/archive/$(date +%Y)/$timestamp"
-elif [ "$move_old_files_to" = "dated_files" ]; then
-    # move deleted or changed files to old directory, and append _$timestamp to file name
-    backup_dir="--backup-dir=$dest/old_files --suffix=_$timestamp"
-elif [ "$move_old_files_to" != "" ]; then
-    print_message "WARNING" "Parameter move_old_files_to=$move_old_files_to, but should be dated_directory or dated_files.\
-  Moving old data to dated_directory."
-    backup_dir="--backup-dir=$dest/$timestamp"
-fi
+backup_dir="--backup-dir=$dest/archive/$(date +%Y)/$timestamp"
 
 ################################### back up ##################################
 cmd="rclone sync $source $dest/$new $backup_dir $log_option $options"
@@ -116,16 +119,17 @@ echo "$cmd"
 
 eval $cmd
 exit_code=$?
+conf_logging "$exit_code"
 
-############################ confirmation and logging ########################
-if [ "$exit_code" -eq 0 ]; then            #if no errors
-    confirmation="$(date +%F_%T) completed $job_name"
-    echo "$confirmation"
-    send_to_log "$confirmation"
-    send_to_log ""
-    exit 0
-else
-    print_message "ERROR" "failed.  rclone exit_code=$exit_code"
-    send_to_log ""
-    exit 1
+################################### clean up old ##################################
+cmd_delete="rclone delete --rmdirs $dest/* --min-age ${retention}d $log_option $options" # you might want to dry-run this too.
+
+echo "Removing old synced files $timestamp $job_name"
+echo "$cmd_purge"
+eval $cmd_purge
+exit_code=$?
+if ! [ $exit_code == 3 ]; then # We don't want any alerts on 3 (no directories found)
+	conf_logging "$exit_code"
 fi
+
+exit 0

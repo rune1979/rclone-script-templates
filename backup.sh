@@ -1,25 +1,31 @@
 #!/bin/bash
-################# SET VARS ##############
+
+################# PARAMETERS ################
 # WARNING! This script has not been fully tested, so keep an eye on it.
 # source and destination usually is something like remote:path instead of the below local paths
-source=/home/pi/test_data_backup/last_snapshot
-dest=/home/pi/test_data_backup
-#dest=/home/pi/test_data_backup/
+source="$1"
+dest="$2"
 
-bckp="month_backup"
-date_for_backup="01" #two digit number ex. 01 for the first in each month to run the script
-del_after="2" # Will will delete everything older than x month in bckp
+date_for_backup="$3" #two digit number ex. 01 for the first in each month to run the script
+del_after="$4" # Will will delete everything older than x month in bckp
 
-old_dir="old_backups" # Where to retain the old backups
-keep_mnt="03,07" # Keep these backup month in the old_dir
-del_all_after="18" # Will delete everything older than x month in old_dir
+keep_mnt="$5" # Keep these backup months in the old_dir ex. 01 or 01,04,07,10(comma seperated)
+del_all_after="$6" # Will delete everything older than x month in old_dir
+
+job_name="$7"
+option="$8" # optinal rclone hooks ex. --dry-run
+
+################# SET VARS ##############
+
+bckp="month_backup" # dir to stor monthly backups
+
+old_dir="old_backups" # dir where to retain the old backups
 
 email="yourmail@gmail.com" # To send allerts
 
 path="$PWD"
 log_file="${path}/all_backup_logs.log"
 log_option="--log-file=$log_file"       # rclone log to log_file
-
 
 ################# FUNCTIONS #################
 
