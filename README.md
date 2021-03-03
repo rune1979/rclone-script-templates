@@ -49,3 +49,8 @@ The sync.sh has 5 parameters:
 *In the /example dir there is an example.*
 
 ## restore_from_sync_archive.sh
+The restore sync script only has two parameters:
+* list_source: In this case the backup dir is the source.
+* pre_dest: Destination is where to recover the file to.
+
+*There is also an example of this scripts execution*
