@@ -1,10 +1,12 @@
 #!/usr/bin/env sh
 #restore a file to it's original location
 
-#source and destination paths
-list_source="$HOME/test_data_backup/archive"
-pre_dest="$HOME/test_rclone_data"
+#################### PARAMETERS ####################
+#source (backup location) and destination (original location) paths
+list_source="$1"
+pre_dest="$2"
 
+#################### SCRIPT ####################
 for entry in "$list_source"/*
 do
   echo "$entry"
