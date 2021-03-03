@@ -5,13 +5,14 @@ source="$1"    #the directory to back up (without a trailing slash)
 dest="$2"      #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
 
 job_name="$3"          #job_name="$(basename $0)"
-email="$4"
-retention="$5" # How many days do you want to retain old files for
 
-options="$6"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
+retention="$4" # How many days do you want to retain old files for
+
+options="$5"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
                        #do not put these in options: --backup-dir, --suffix, --log-file
 
 ################################ other variables ###############################
+email="your_email@some_mail.com" # the admin email
 # $new is the directory name of the current snapshot
 # $timestamp is time that old file was moved out of new (not time that file was copied from source)
 new="last_snapshot"
@@ -28,8 +29,6 @@ log_file="${path}/all_backup_logs.log"               #replace path extension wit
 # set log_option for rclone
 log_option="--log-file=$log_file"       #log to log_file
 #log_option="--syslog"                  #log to systemd journal
-
-move_old_files_to="dated_directory" #move_old_files_to is one of:
 
 ################################## functions #################################
 send_to_log()
@@ -63,6 +62,20 @@ print_message()
     send_mail "$msg"
 }
 
+# confirmation and logging
+conf_logging() {
+    exit_code="$1"
+    if [ "$exit_code" -eq 0 ]; then            #if no errors
+        confirmation="$(date +%F_%T) completed $job_name"
+        echo "$confirmation"
+        send_to_log "$confirmation"
+        send_to_log ""
+    else
+        print_message "ERROR" "failed.  rclone exit_code=$exit_code"
+        send_to_log ""
+        exit 1
+    fi
+}
 ################################# range checks ################################
 # if source is empty string
 if [ -z "$source" ]; then
@@ -105,16 +118,17 @@ echo "$cmd"
 
 eval $cmd
 exit_code=$?
+conf_logging "$exit_code"
 
-############################ confirmation and logging ########################
-if [ "$exit_code" -eq 0 ]; then            #if no errors
-    confirmation="$(date +%F_%T) completed $job_name"
-    echo "$confirmation"
-    send_to_log "$confirmation"
-    send_to_log ""
-    exit 0
-else
-    print_message "ERROR" "failed.  rclone exit_code=$exit_code"
-    send_to_log ""
-    exit 1
+################################### clean up old ##################################
+cmd_delete="rclone delete --rmdirs $dest/$bckp/* --min-age ${del_after}M $log_option" # you might want to dry-run this too.
+
+echo "Removing old synced files $timestamp $job_name"
+echo "$cmd_purge"
+eval $cmd_purge
+exit_code=$?
+if ! [ $exit_code == 3 ]; then # We don't want any alerts on 3 (no directories found)
+	conf_logging "$exit_code"
 fi
+
+exit 0
