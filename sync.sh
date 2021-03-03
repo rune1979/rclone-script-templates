@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+#This script is based on the rclone_jobber.sh at https://github.com/wolfv6/rclone_jobber
 
 ################################# parameters #################################
 source="$1"    #the directory to back up (without a trailing slash)
