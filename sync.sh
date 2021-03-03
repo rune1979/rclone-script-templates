@@ -1,18 +1,16 @@
 #!/usr/bin/env sh
 
 ################################# parameters #################################
-source="/home/pi/test_rclone_data"            #the directory to back up (without a trailing slash)
-dest="/home/pi/test_data_backup"              #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
-move_old_files_to="dated_directory" #move_old_files_to is one of:
-                       # "dated_directory" - move old files to a dated directory (an incremental backup)
-                       # "dated_files"     - move old files to old_files directory, and append move date to file names (an incremental backup)
-                       # ""                - old files are overwritten or deleted (a plain one-way sync backup)
+source="/home/pi/test_rclone_data"    #the directory to back up (without a trailing slash)
+dest="/home/pi/test_data_backup"      #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
+
 options="$1"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
                        #do not put these in options: --backup-dir, --suffix, --log-file
 job_name="Nextcloud_user_data"          #job_name="$(basename $0)"
 email="yourmail@gmail.com"
 retention="30" # How many days do you want to retain old files for
-################################ set variables ###############################
+
+################################ other variables ###############################
 # $new is the directory name of the current snapshot
 # $timestamp is time that old file was moved out of new (not time that file was copied from source)
 new="last_snapshot"
@@ -29,6 +27,8 @@ log_file="${path}/all_backup_logs.log"               #replace path extension wit
 # set log_option for rclone
 log_option="--log-file=$log_file"       #log to log_file
 #log_option="--syslog"                  #log to systemd journal
+
+move_old_files_to="dated_directory" #move_old_files_to is one of:
 
 ################################## functions #################################
 send_to_log()
