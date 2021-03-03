@@ -5,7 +5,8 @@
 #source (backup location) and destination (original location) paths
 list_source="$1"
 pre_dest="$2"
-
+job_name="$3"
+opitons="$4"
 #################### SCRIPT ####################
 for entry in "$list_source"/*
 do
@@ -26,4 +27,4 @@ dest="$pre_dest/$rm_time_dir-$get_old_date"
 echo "\n copying from: $source"
 echo "\n to: $dest"
 printf "\n*** restoring old file in new dated directory ***\n"
-rclone copy $source $dest
+rclone copy $source $dest $options
