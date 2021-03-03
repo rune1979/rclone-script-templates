@@ -13,6 +13,7 @@ keep_mnt="$5" # Keep these backup months in the old_dir ex. 01 or 01,04,07,10(co
 del_all_after="$6" # Will delete everything older than x month in old_dir
 
 job_name="$7"
+option="$8" # optinal rclone hooks ex. --dry-run
 ################# SET VARS ##############
 
 bckp="month_backup" # dir to stor monthly backups
