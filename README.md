@@ -19,14 +19,14 @@ in trying to make a Raspberry Pi backup server. You may read more about it here:
 The backup can have 8 parameters for carrying out backups and removal of old backups. In contrast to 
 the "sync.sh" this script will make a full copy of source on each backup. (costly on bandwidth and resources)
 <b>The 8 parameters:</b>
-source: remote:source/path
-dest: remote:backup/path
-date_for_backup: day of the month to make a full backup ex. 01
-del_after: How many month back to backup (delete everything older than x month) except the below..
-keep_mnt: Keep these backup months in a dir called old_dir ex. 01 or 01,04,07,10(comma seperated)
-del_all_after: Will delete everything older than x month in the old_dir
-job_name: The name of the current job
-option: Optional could be rclone hooks ex. --dry-run
+* source: remote:source/path
+* dest: remote:backup/path
+* date_for_backup: day of the month to make a full backup ex. 01
+* del_after: How many month back to backup (delete everything older than x month) except the below..
+* keep_mnt: Keep these backup months in a dir called old_dir ex. 01 or 01,04,07,10(comma seperated)
+* del_all_after: Will delete everything older than x month in the old_dir
+* job_name: The name of the current job
+* option: Optional could be rclone hooks ex. --dry-run
 
 You need to update the default email address in the "set vars" section, to your own and you need the abillity to use sendmail (or you can change that part)
 
@@ -40,11 +40,11 @@ and only backs up the the old versions of changed files. So, (depending on the "
 asks for a file version 20 days ago (they may have made unrecoverable changes or deleted the file) you can reestablish
 the older version in their filesystem for them (with restore_from_sync_archive.sh).
 The sync.sh has 5 parameters: 
-source: remote:source/path
-dest: remote:backup/path
-job_name: The name of the current job
-retention: How many days back to keep old files
-option: Optional could be rclone hooks ex. --dry-run
+* source: remote:source/path
+* dest: remote:backup/path
+* job_name: The name of the current job
+* retention: How many days back to keep old files
+* option: Optional could be rclone hooks ex. --dry-run
 
 <i>In the /example dir there is an example.</i>
 
