@@ -1,14 +1,15 @@
 #!/usr/bin/env sh
 
 ################################# parameters #################################
-source="/home/pi/test_rclone_data"    #the directory to back up (without a trailing slash)
-dest="/home/pi/test_data_backup"      #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
+source="$1"    #the directory to back up (without a trailing slash)
+dest="$2"      #the directory to back up to (without a trailing slash or "last_snapshot") destination=$dest/last_snapshot
 
-options="$1"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
+job_name="$3"          #job_name="$(basename $0)"
+email="$4"
+retention="$5" # How many days do you want to retain old files for
+
+options="$6"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
                        #do not put these in options: --backup-dir, --suffix, --log-file
-job_name="Nextcloud_user_data"          #job_name="$(basename $0)"
-email="yourmail@gmail.com"
-retention="30" # How many days do you want to retain old files for
 
 ################################ other variables ###############################
 # $new is the directory name of the current snapshot
@@ -89,19 +90,7 @@ if pidof -o $PPID -x "$job_name"; then
 fi
 
 ############################### move_old_files_to #############################
-# deleted or changed files are removed or moved, depending on value of move_old_files_to variable
-# default move_old_files_to="" will remove deleted or changed files from backup
-if [ "$move_old_files_to" = "dated_directory" ]; then
-    # move deleted or changed files to archive/$(date +%Y)/$timestamp directory
-    backup_dir="--backup-dir=$dest/archive/$(date +%Y)/$timestamp"
-elif [ "$move_old_files_to" = "dated_files" ]; then
-    # move deleted or changed files to old directory, and append _$timestamp to file name
-    backup_dir="--backup-dir=$dest/old_files --suffix=_$timestamp"
-elif [ "$move_old_files_to" != "" ]; then
-    print_message "WARNING" "Parameter move_old_files_to=$move_old_files_to, but should be dated_directory or dated_files.\
-  Moving old data to dated_directory."
-    backup_dir="--backup-dir=$dest/$timestamp"
-fi
+backup_dir="--backup-dir=$dest/archive/$(date +%Y)/$timestamp"
 
 ################################### back up ##################################
 cmd="rclone sync $source $dest/$new $backup_dir $log_option $options"
