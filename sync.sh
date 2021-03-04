@@ -124,7 +124,7 @@ conf_logging "$exit_code"
 
 ################################### clean up old ##################################
 cmd_delete="rclone delete --min-age ${retention}d $dest/archive/ $log_option -i $options" # you might want to dry-run this too.Remove files
-cmd_rmdir="rclone rmdirs --min-age $dest/archive/ $log_option -v $options" # Remove dirs
+cmd_rmdir="rclone rmdirs $dest/archive/ $log_option -v $options" # Remove dirs
 echo "Removing old synced files $timestamp $job_name"
 echo "$cmd_delete"
 eval $cmd_delete

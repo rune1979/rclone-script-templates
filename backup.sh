@@ -89,9 +89,15 @@ if [ $ifStart == $date_for_backup ]; then
 		eval $cmd
 		exit_code=$?
 		conf_logging "$exit_code"
-		cmd_purge="rclone delete --rmdirs $dest/$old_dir/* --min-age ${del_all_after}M $log_option" # you might turn on --dry-run to be sure that nothing is deleted that should not be deleted
-		echo "$cmd_purge"
-		eval $cmd_purge
+		cmd_delete="rclone delete --min-age ${del_all_after}M $dest/$old_dir/ $log_option" # you might turn on --dry-run to be sure that nothing is deleted that should not be deleted
+		cmd_rmdirs="rclone rmdirs $dest/$old_dir/ $log_option" # you might turn on --dry-run to be sure that nothing is deleted that should not be deleted
+        echo "$cmd_delete"
+		eval $cmd_delete
+		exit_code=$?
+		if ! [ $exit_code == 3 ]; then 
+			conf_logging "$exit_code"
+		fi
+		eval $cmd_rmdirs
 		exit_code=$?
 		if ! [ $exit_code == 3 ]; then 
 			conf_logging "$exit_code"
@@ -102,14 +108,20 @@ if [ $ifStart == $date_for_backup ]; then
 		eval $cmd
 		exit_code=$?
 		conf_logging "$exit_code"
-		cmd_purge="rclone delete --rmdirs $dest/$bckp/* --min-age ${del_after}M $log_option" # you might want to dry-run this too.
-		echo "$cmd_purge"
-		eval $cmd_purge
+		cmd_delete="rclone delete --min-age ${del_after}M $dest/$bckp/ $log_option" # you might want to dry-run this too.
+		cmd_rmdirs="rclone rmdirs $dest/$bckp/ $log_option" # you might want to dry-run this too.
+        echo "$cmd_delete"
+		eval $cmd_delete
 		exit_code=$?
 		if ! [ $exit_code == 3 ]; then 
 			conf_logging "$exit_code"
 		fi
-	fi
+        eval $cmd_rmdirs
+        exit_code=$?
+		if ! [ $exit_code == 3 ]; then 
+			conf_logging "$exit_code"
+		fi
+	fi  
 fi
 exit 0
 
