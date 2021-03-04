@@ -35,7 +35,7 @@ in the /example dir there is an example of setting up a backup job. Ususally you
 *There is no script for restore of a backup, as this is just a one line copy command in rclone.*
 
 ## sync.sh
-sync.sh is a more light weight aproach to backup, it keeps track of changes in individual files and folders
+sync.sh is an incremental backup and more light weight aproach to backup, it keeps track of changes in individual files and folders
 and only backs up the the old versions of changed files. So, (depending on the "retention" time) if a employee
 asks for a file version 20 days ago (they may have made unrecoverable changes or deleted the file) you can reestablish
 the older version in their filesystem for them (with restore_from_sync_archive.sh).

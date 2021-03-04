@@ -1,5 +1,6 @@
-#!/usr/bin/env sh
+#!/bin/bash
 #This script is based on the rclone_jobber.sh at https://github.com/wolfv6/rclone_jobber
+
 
 ################################# parameters #################################
 source="$1"    #the directory to back up (without a trailing slash)
@@ -122,14 +123,19 @@ exit_code=$?
 conf_logging "$exit_code"
 
 ################################### clean up old ##################################
-cmd_delete="rclone delete --rmdirs $dest/* --min-age ${retention}d $log_option $options" # you might want to dry-run this too.
-
+cmd_delete="rclone delete --min-age ${retention}d $dest/archive/ $log_option -i $options" # you might want to dry-run this too.Remove files
+cmd_rmdir="rclone rmdirs --min-age $dest/archive/ $log_option -v $options" # Remove dirs
 echo "Removing old synced files $timestamp $job_name"
-echo "$cmd_purge"
-eval $cmd_purge
+echo "$cmd_delete"
+eval $cmd_delete
 exit_code=$?
 if ! [ $exit_code == 3 ]; then # We don't want any alerts on 3 (no directories found)
-	conf_logging "$exit_code"
+        conf_logging "$exit_code"
+fi
+eval $cmd_rmdir
+exit_code=$?
+if ! [ $exit_code == 3 ]; then # We don't want any alerts on 3 (no directories found)
+        conf_logging "$exit_code"
 fi
 
 exit 0
