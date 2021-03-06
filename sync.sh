@@ -133,7 +133,7 @@ delete_dir() {
 
 CMD_LSD="rclone lsd --max-depth 1 $dest/sync_archive/"
 mapfile -t dir_array < <(eval $CMD_LSD)
-DATE=$(date -d "$now - $days days" +'%Y-%m-%d')
+DATE=$(date -d "$now - $retention days" +'%Y-%m-%d')
 for i in "${!dir_array[@]}"; do
         dir_path="${dir_array[i]}"
         dir_date=$(echo ${dir_path##* })
