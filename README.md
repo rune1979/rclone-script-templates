@@ -22,11 +22,13 @@ the "sync.sh" this script will make a full copy of source on each backup. (costl
 * source: remote:source/path
 * dest: remote:backup/path
 * date_for_backup: day of the month to make a full backup ex. 01
-* del_after: How many month back to backup (delete everything older than x month) except the below..
+* del_after: How many days back to keep monthly backups (delete everything older than x day ex. 90) except the below..
 * keep_mnt: Keep these backup months in a dir called old_dir ex. 01 or 01,04,07,10(comma seperated)
-* del_all_after: Will delete everything older than x month in the old_dir
+* del_all_after: Will delete everything older than x days in the old_dir. Ex. 365
 * job_name: The name of the current job
 * option: Optional could be rclone hooks ex. --dry-run
+
+**Remember to change the email address**
 
 You need to update the default email address in the "set vars" section, to your own and you need the abillity to use sendmail (or you can change that part)
 
@@ -39,18 +41,22 @@ sync.sh is an incremental backup and more light weight aproach to backup, it kee
 and only backs up the the old versions of changed files. So, (depending on the "retention" time) if a employee
 asks for a file version 20 days ago (they may have made unrecoverable changes or deleted the file) you can reestablish
 the older version in their filesystem for them (with restore_from_sync_archive.sh).
-The sync.sh has 5 parameters: 
+**The sync.sh has 5 parameters:** 
 * source: remote:source/path
 * dest: remote:backup/path
 * job_name: The name of the current job
 * retention: How many days back to keep old files
 * option: Optional could be rclone hooks ex. --dry-run
 
+**remember to change the emaiil address**
+
 *In the /example dir there is an example.*
 
 ## restore_from_sync_archive.sh
-The restore sync script only has two parameters:
+The restore sync script only has **four parameters:**
 * list_source: In this case the backup dir is the source.
 * pre_dest: Destination is where to recover the file to.
+* job_name="file_recovery" # Change to some thing
+* options="" # Set any rclone hooks 
 
 *There is also an example of this scripts execution*
