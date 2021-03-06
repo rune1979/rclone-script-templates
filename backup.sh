@@ -112,7 +112,7 @@ if [ $ifStart == $date_for_backup ]; then
             dir_date=$(echo ${dir_path##* })
             dir_date2=$(echo ${dir_date%_*})        
             conv_date=$(date -d "$dir_date2" +'%Y-%m-%d')
-            if [[ $conv_date > $DATE ]];then
+            if [[ $conv_date < $DATE ]];then
                 delete_dir "$dir_date" "old"
             fi
         done
@@ -130,7 +130,7 @@ if [ $ifStart == $date_for_backup ]; then
             dir_date=$(echo ${dir_path##* })
             dir_date2=$(echo ${dir_date%_*})        
             conv_date=$(date -d "$dir_date2" +'%Y-%m-%d')
-            if [[ $conv_date > $DATE ]];then
+            if [[ $conv_date < $DATE ]];then
                 delete_dir "$dir_date" "mnt"
             fi
         done
