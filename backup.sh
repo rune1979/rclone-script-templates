@@ -83,7 +83,7 @@ delete_dir() {
     else
         cmd_delete="rclone purge $dest/$bckp/$dir $log_option $options" # you might want to dry-run this.
     fi
-    echo "Removing old archive backups $timestamp $job_name"
+    echo "Removing old archive backups $dir $job_name"
     echo "$cmd_delete"
     eval $cmd_delete
     exit_code=$?
