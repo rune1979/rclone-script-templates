@@ -125,7 +125,7 @@ conf_logging "$exit_code"
 delete_dir() {
     dir="$1"
     cmd_delete="rclone purge $dest/sync_archive/$dir $log_option $options" # you might want to dry-run this.
-    echo "Removing old synced files $timestamp $job_name"
+    echo "Removing old synced files $dir $job_name"
     echo "$cmd_delete"
     eval $cmd_delete
     exit_code=$?
