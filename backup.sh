@@ -79,7 +79,7 @@ delete_dir() {
     if [ $archive == "old" ];then
         cmd_delete="rclone purge $dest/$old_dir/$dir $log_option $options" # you might want to dry-run this.
     else
-        cmd_delete="rclone purge $dest/$old_dir/$dir $log_option $options" # you might want to dry-run this.
+        cmd_delete="rclone purge $dest/$bckp/$dir $log_option $options" # you might want to dry-run this.
     fi
     echo "Removing old archive backups $timestamp $job_name"
     echo "$cmd_delete"
