@@ -14,10 +14,10 @@ del_all_after="$6" # Will delete everything older than x days in old_dir ex. 365
 
 job_name="$7"
 option="$8" # optinal rclone hooks ex. --dry-run
+email="$9" # To send allerts
 
 ################# SET VARS ##############
-email="yourmail@gmail.com" # To send allerts
-
+# Be carefull to double check the whole script if you change the below variables
 bckp="month_backup" # dir to stor monthly backups
 old_dir="old_backups" # dir where to retain the old backups
 
@@ -38,12 +38,14 @@ send_to_log()
 
 send_mail()
 {
+if [[ ! -z "$email" ]];then
 msg="$1"
 /usr/sbin/sendmail -i -- $email <<EOF
 Subject: Backup Urgency - $job_name
 
 $msg
 EOF
+fi
 }
 
 print_message()

@@ -16,9 +16,9 @@ in trying to make a Raspberry Pi backup server. You may read more about it here:
 
 
 ## backup.sh
-The backup can have 8 parameters for carrying out backups and removal of old backups. In contrast to 
+The backup can have 9 parameters for carrying out backups and removal of old backups. In contrast to 
 the "sync.sh" this script will make a full copy of source on each backup. (costly on bandwidth and resources)
-**The 8 parameters:**
+**The 9 parameters:**
 * source: remote:source/path
 * dest: remote:backup/path
 * date_for_backup: day of the month to make a full backup ex. 01
@@ -27,8 +27,7 @@ the "sync.sh" this script will make a full copy of source on each backup. (costl
 * del_all_after: Will delete everything older than x days in the old_dir. Ex. 365
 * job_name: The name of the current job
 * option: Optional could be rclone hooks ex. --dry-run
-
-**Remember to change the email address**
+* email: Notify this email if something goes wrong
 
 You need to update the default email address in the "set vars" section, to your own and you need the abillity to use sendmail (or you can change that part)
 
@@ -41,14 +40,13 @@ sync.sh is an incremental backup and more light weight aproach to backup, it kee
 and only backs up the the old versions of changed files. So, (depending on the "retention" time) if a employee
 asks for a file version 20 days ago (they may have made unrecoverable changes or deleted the file) you can reestablish
 the older version in their filesystem for them (with restore_from_sync_archive.sh).
-**The sync.sh has 5 parameters:** 
+**The sync.sh has 6 parameters:** 
 * source: remote:source/path
 * dest: remote:backup/path
 * job_name: The name of the current job
 * retention: How many days back to keep old files
 * option: Optional could be rclone hooks ex. --dry-run
-
-**remember to change the emaiil address**
+* email: notify this email if something goes wrong
 
 *In the /example dir there is an example.*
 

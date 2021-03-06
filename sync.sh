@@ -9,9 +9,10 @@ job_name="$3"          #job_name="$(basename $0)"
 retention="$4" # How many days do you want to retain old files for
 options="$5"           #rclone options like "--filter-from=filter_patterns --checksum --log-level="INFO" --dry-run"
                        #do not put these in options: --backup-dir, --suffix, --log-file
+email="$6" # the admin email
 
 ################################ other variables ###############################
-email="your_email@some_mail.com" # the admin email
+# Be carefull if you change some of the below.
 # $new is the directory name of the current snapshot
 # $timestamp is time that old file was moved out of new (not time that file was copied from source)
 new="last_snapshot"
@@ -40,12 +41,14 @@ send_to_log()
 
 send_mail()
 {
+if [[ ! -z "$email" ]];then
 msg="$1"
 /usr/sbin/sendmail -i -- $email <<EOF
 Subject: Backup Urgency - $job_name
 
 $msg
 EOF
+fi
 }
 
 # print message to echo, log, and popup
