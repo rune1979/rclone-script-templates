@@ -8,4 +8,4 @@ retention="30" # How many days back in time, to collect old files
 options="--dry-run" # remove --dry-run hook when you have tested the file
 email="some@email.com" # Notification email
 
-full/path/to/sync.sh "$source" "$dest" "$job_name" "$retention" "$options"
+full/path/to/sync.sh "$source" "$dest" "$job_name" "$retention" "$options" "$email"
