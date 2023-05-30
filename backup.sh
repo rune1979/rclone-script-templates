@@ -3,7 +3,7 @@
 ################# PARAMETERS ################
 # WARNING! This script has not been fully tested, so keep an eye on it.
 # source and destination usually is something like remote:path instead of the below local paths
-source="$1"
+tsource="$1"
 dest="$2"
 
 date_for_backup="$3" #two digit number ex. 01 for the first in each month to run the script
@@ -66,12 +66,11 @@ conf_logging()
     		confirmation="$(date +%F_%T) completed $bckp"
     		echo "$confirmation"
     		send_to_log "$confirmation"
-    		send_to_log ""
-    	
+    		send_to_log ""	
 	else
     		print_message "ERROR" "failed.  rclone exit_code=$exit_code"
     		send_to_log ""
-    	exit 1
+    	        exit 1
 	fi
 }
 
@@ -79,9 +78,9 @@ delete_dir() {
     dir="$1"
     archive="$2"
     if [ $archive == "old" ];then
-        cmd_delete="rclone purge $dest/$old_dir/$dir $log_option $options" # you might want to dry-run this.
+        cmd_delete="rclone purge $dest/$old_dir/$dir $log_option $option" # you might want to dry-run this.
     else
-        cmd_delete="rclone purge $dest/$bckp/$dir $log_option $options" # you might want to dry-run this.
+        cmd_delete="rclone purge $dest/$bckp/$dir $log_option $option" # you might want to dry-run this.
     fi
     echo "Removing old archive backups $dir $job_name"
     echo "$cmd_delete"
@@ -99,9 +98,16 @@ ifStart=`date '+%d'`
 month=`date '+%m'`
 timestamp="$(date +%F_%H%M%S)"
 
-if [ $ifStart == $date_for_backup ]; then
+# Split the comma-separated list into an array
+# IFS=',' read -ra backup_dates <<< "$date_for_backup"
+
+# Iterate over the array and compare each value with ifStart
+#for backup_date in "${backup_dates[@]}"; do
+#    if [[ $ifStart == $backup_date ]]; then
+# if [ $ifStart == $date_for_backup ]; then
+if echo "$date_for_backup" | grep -q "$ifStart"; then
 	if echo "$keep_mnt" | grep -q "$month"; then
-		cmd="rclone copy $source $dest/$old_dir/$timestamp $log_option"
+		cmd="rclone copy $tsource $dest/$old_dir/$timestamp $log_option $option"
 		echo "$cmd"
 		eval $cmd
 		exit_code=$?
@@ -119,7 +125,7 @@ if [ $ifStart == $date_for_backup ]; then
             fi
         done
 	else
-		cmd="rclone copy $source $dest/$bckp/$timestamp $log_option"
+		cmd="rclone copy $tsource $dest/$bckp/$timestamp $log_option $option"
 		echo "$cmd"
 		eval $cmd
 		exit_code=$?
@@ -139,4 +145,5 @@ if [ $ifStart == $date_for_backup ]; then
 	fi  
 fi
 exit 0
+
 
